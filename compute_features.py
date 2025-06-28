@@ -18,7 +18,7 @@ MODEL = 'clip'
 
 data_dir = 'VocPascal/'
 image_dir = os.path.join(data_dir, 'JPEGImages/JPEGImages')
-list_of_images = os.path.join(data_dir, 'val_voc.txt')
+list_of_images = os.path.join(data_dir, 'train_voc.txt')
 if __name__ == '__main__':
     #reading data
     with open(list_of_images, "r+") as file: 
@@ -66,6 +66,6 @@ if __name__ == '__main__':
             if i%100 == 0 :
                 print(f'{i}/{n_images}')            
                 
-        feat_file = os.path.join(f'feat_{MODEL}_VocPascal.npy')
+        feat_file = os.path.join(f'train_{MODEL}_VocPascal.npy')
         np.save(feat_file, features)
         print('saving data ok')

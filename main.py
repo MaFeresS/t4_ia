@@ -10,12 +10,19 @@ DATAFILE=['clip','dinov2','resnet34']
 
 for d in DATAFILE:
 
-    file=np.load(f"feat_{d}_VocPascal.npy")
+    train_file=np.load(f"train_{d}_VocPascal.npy")
     with open("VocPascal/val_voc.txt","r") as labelfile:
         labels=[]
         for i in labelfile.readlines():
             labels.append(i.split("\t")[1])
-    labels=np.array(labels)
+    train_labels=np.array(labels)
+
+    val_file=np.load(f"feat_{d}_VocPascal.npy")
+    with open("VocPascal/val_voc.txt","r") as labelfile:
+        labels=[]
+        for i in labelfile.readlines():
+            labels.append(i.split("\t")[1])
+    val_labels=np.array(labels)
 
     for m in CLASSIFIER:
         if m=='mlp':
@@ -24,5 +31,5 @@ for d in DATAFILE:
             model = SVC(kernel='rbf')
         elif m=='rf':
             model =RandomForestClassifier(random_state=10)
-        mod=model.fit(file)
+        mod=model.fit(train_file,train_labels)
         labels_=mod.predict()
