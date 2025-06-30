@@ -10,6 +10,11 @@ import matplotlib.pyplot as plt
 CLASSIFIER=['mlp','svm','rf']
 DATAFILE=['clip','dinov2','resnet34']
 
+keys=[]
+acc_out=[]
+cm_store=[]
+color=["orange","orange","orange","blue","blue","blue","green","green","green"]
+
 for d in DATAFILE:
 
     train_file=np.load(f"train_{d}_VocPascal.npy")
@@ -39,3 +44,21 @@ for d in DATAFILE:
         labels_=mod.predict(val_file)
         acc=skm.accuracy_score(val_labels,labels_)
         print(labels_,acc)
+        keys.append(f"{m}_{d}")
+        acc_out.append(acc)
+        cm_store.append(skm.confusion_matrix(val_labels,labels_))
+
+plt.bar(keys,acc_out,color=color)
+plt.title("Accuracy")
+plt.xticks(rotation=25)
+plt.show()
+
+best_i=None
+max=0
+for i,a in enumerate(acc_out):
+    if a>max:
+        max=a
+        best_i=i
+print(best_i,max)
+print("\n")
+print(f"{keys[best_i]}\n{cm_store[best_i]}")
