@@ -1,5 +1,6 @@
 import numpy as np
 import sklearn.metrics as skm
+from sklearn.model_selection import GridSearchCV
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neural_network import MLPClassifier
@@ -36,17 +37,19 @@ for d in DATAFILE:
         if m=='mlp':
             model = MLPClassifier((256,),'relu',random_state=10,max_iter=300)
         elif m=='svm':
-            model = SVC(kernel='rbf')
+            param_grid={'C': [1,10,15,20],'gamma': [0.001,0.005,0.01]}
+            model = GridSearchCV(SVC(kernel='rbf'),param_grid=param_grid,cv=5,n_jobs=-1)
         elif m=='rf':
-            model =RandomForestClassifier(random_state=10)
+            model =RandomForestClassifier(random_state=10,n_estimators=200)
         print(len(train_file),len(train_labels))
-        mod=model.fit(train_file,train_labels)
-        labels_=mod.predict(val_file)
+        labels_=model.fit(train_file,train_labels).predict(val_file)
         acc=skm.accuracy_score(val_labels,labels_)
         print(labels_,acc)
         keys.append(f"{m}_{d}")
         acc_out.append(acc)
         cm_store.append(skm.confusion_matrix(val_labels,labels_))
+        if m=='svm':
+            print(f"best svm: {model.best_params_}")
 
 plt.bar(keys,acc_out,color=color)
 plt.title("Accuracy")
